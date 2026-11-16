@@ -1,26 +1,107 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><title>Elsewhere — Episode 1</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{font-family:Georgia,serif;background:#121625;color:#f3e9d8;max-width:700px;margin:35px auto;padding:20px;line-height:1.65}button{display:block;width:100%;padding:15px;margin:10px 0;color:#f3e9d8;background:#262b40;border:1px solid #cbb58d;border-radius:9px;text-align:left;font:inherit}h1{color:#ead19c}small{color:#c2ae87}</style>
-<main id="game"></main>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#131627"><title>Elsewhere · Greyhaven</title>
+<style>
+:root{color-scheme:dark;--ink:#f1eadd;--sub:#bcb6c6;--gold:#d6b97b;--bg:#101321;--panel:#1c2031;--line:#3e4057}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 75% -15%,#29304e 0,transparent 55%),var(--bg);color:var(--ink);font:16px/1.62 Georgia,serif}
+main{max-width:790px;margin:auto;min-height:100dvh;display:flex;flex-direction:column;padding:18px 18px max(15px,env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:4px 0 17px}
+h1{font-size:1.45rem;letter-spacing:.08em;font-weight:normal;margin:0;color:#f2d6a0}header small,.meta{font:11px/1.4 system-ui,sans-serif;letter-spacing:.13em;color:var(--sub);text-transform:uppercase}
+button{font:inherit;color:var(--ink);cursor:pointer}button:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tools{display:flex;gap:7px}.tools button,.pill{border:1px solid var(--line);border-radius:22px;background:#282b40;padding:7px 12px;font:12px system-ui,sans-serif}
+.status{display:flex;flex-wrap:wrap;gap:8px;padding:15px 0}.pill{color:#ded6c7}.pill b{color:var(--gold);font-weight:500}
+#feed{flex:1;min-height:250px;padding-bottom:18px}.entry{border-left:2px solid #393c57;padding:2px 0 4px 16px;margin:15px 0 20px;animation:appear .25s ease}
+.entry p{margin:5px 0;white-space:pre-wrap}.entry .who{font:11px system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em;color:var(--gold)}
+.entry.player{border-color:#bd987b}.entry.player p{font-style:italic;color:#d9c9ba}.entry.event{border-color:#9d89c3}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.compose{position:sticky;bottom:0;background:linear-gradient(0deg,#101321 80%,#101321f0);padding-top:12px;border-top:1px solid var(--line)}
+.compose label{display:block;font:12px system-ui,sans-serif;color:var(--sub);margin-bottom:8px}
+textarea{width:100%;min-height:64px;max-height:180px;resize:vertical;border:1px solid #65617b;border-radius:12px;background:#25293c;color:#fff;padding:12px;font:16px/1.45 system-ui,sans-serif}
+.actions{display:flex;justify-content:space-between;align-items:center;padding:9px 0 2px;gap:10px}
+.actions small{color:var(--sub);font:11px system-ui,sans-serif}.send{background:#b99561;border:0;color:#181620;border-radius:9px;padding:10px 19px;font:600 13px system-ui,sans-serif}
+dialog{border:1px solid #706885;border-radius:14px;background:#222639;color:var(--ink);width:min(93vw,560px);padding:20px;box-shadow:0 30px 80px #0009}dialog::backdrop{background:#090a13cd}
+dialog h2{margin-top:0;color:var(--gold);font-weight:normal}dialog p,dialog li{font-size:14px}dialog .close{background:var(--gold);color:#171724;border:0;border-radius:6px;padding:9px 16px}
+summary{cursor:pointer;color:var(--gold)}.dim{color:var(--sub)}a{color:#edd097}
+@media (prefers-reduced-motion:reduce){.entry{animation:none}}
+</style></head><body><main>
+<header><div><small>THE ELSEWHERE PROJECT · EPISODE 01</small><h1>GREYHAVEN</h1></div><div class="tools"><button id="guide" aria-label="Game guide">Guide</button><button id="reset" aria-label="New game">↺</button></div></header>
+<section class="status" aria-label="Game status"><span class="pill" id="place"></span><span class="pill" id="clock"></span><span class="pill" id="items"></span></section>
+<section id="feed" aria-live="polite"></section>
+<form id="form" class="compose"><label for="action">What do you do? Type freely — no choice buttons.</label><textarea id="action" maxlength="550" placeholder="I walk into the bar and ask the pianist why he knows me..." required></textarea><div class="actions"><small>Enter to act · Shift+Enter for a new line</small><button class="send" type="submit">Do it ↗</button></div></form>
+</main>
+<dialog id="help"><h2>How Elsewhere works</h2><p>Type what you do or say in your own words. Explore the station, square, Lantern Bar, library and cliff cottage. Speak to Rowan, Mira or the conductor. Inspect objects, ask questions, take or use items, or just rest.</p><p>The town has a persistent clock, characters remember some of your behavior, and unexpected events can interrupt you. Your choices have consequences. There is a solvable secret and more than one ending, but no countdown to failure.</p><p><strong>Try:</strong> “I go to the library,” “I ask Mira about Evelyn,” “I inspect the clock,” “I take the gear,” “I rest,” or “I try to force the door.” More imaginative actions are welcome, though this offline prototype understands a limited set of intents.</p><p class="dim">This version runs entirely in your browser, without an AI model. It interprets many natural-language actions using local rules; it does not genuinely understand arbitrary text. Future online AI support will need a secure backend. Progress is saved on this device.</p><details><summary>Player notes</summary><p>No points, daily streaks, or affection meters. You can leave the mystery alone. The world will still notice you.</p></details><button class="close" id="closeHelp">Return to Greyhaven</button></dialog>
 <script>
-const chapters={
-train:{title:"The Last Train",text:"You wake to rain on the glass. Beneath the tracks: stars instead of earth. A conductor hands you a brass key. ‘The town has borrowed a minute,’ he says. ‘Don't let it borrow your life.’",options:[["Step into Greyhaven","square"],["Ask about the key","warning"]]},
-warning:{title:"The conductor's warning",text:"‘When the clock forgets, remember. And when someone tells you who you are, ask what they want.’ The train stops.",options:[["Take the key and step off","square"]]},
-square:{title:"Greyhaven · 11:47 PM",text:"The station clock ticks without moving. Three lights shine through the rain: a jazz bar, a library and a house on the cliff.",options:[["The Lantern Bar","bar"],["The Municipal Library","library"],["The house on the cliff","house"],["The station clock","clock"]]},
-bar:{title:"The Lantern Bar",text:"At the piano, a man stops mid-song. ‘You're late,’ he says, grinning. ‘I was going to deliver an exceptionally good apology.’ He introduces himself as Rowan. ‘At 11:48, the town is supposed to move forward. Instead, the minute starts again. Evelyn Vale tried to stop it. Mira keeps her journal.’",options:[["‘Try the apology, then.’","banter"],["Visit Mira's library","library"],["Back into the rain","square"]]},
-banter:{title:"An apology of questionable quality",text:"‘I'm sorry for being so charming in your general vicinity.’ ‘Terrible.’ ‘I know. I rehearsed.’ His grin fades. ‘I remember you being here before. I remember you never arriving at all.’",options:[["Ask about the clock","clock"],["Return to the square","square"]]},
-library:{title:"The Municipal Library",text:"Mira, the librarian, recognizes the key. ‘Evelyn Vale froze the town one minute before her daughter Ada's accident. She left instructions for undoing it. Open the drawer if you want the truth.’",options:[["Unlock the drawer","drawer"],["Read a book bearing your own name","book"],["Return to the square","square"]]},
-book:{title:"A possible life",text:"The book describes a life in which you remained in Greyhaven: quiet mornings, coffee, someone who knows when to leave you alone. On the last page: A POSSIBLE LIFE IS NOT A PROMISE.",options:[["Close the book","library"]]},
-drawer:{title:"Evelyn's journal",text:"Inside the drawer: a silver gear and a journal. ‘Set the gear inside the station clock. Speak one truth: LET THE MINUTE PASS or LET THE MINUTE STAY. No choice will be painless.’ You take the gear.",options:[["Go to the station clock","endingchoice"],["Rest at the cottage first","house"]]},
-house:{title:"The house on the cliff",text:"A fire burns. Rain softens against the window. On the bed sit fourteen absurdly soft pillows. A note reads: YOU ARE ALLOWED TO REST BEFORE YOU DECIDE.",options:[["Stay here a little longer","rest"],["Read the photograph on the mantel","photo"],["Return to town","square"]]},
-rest:{title:"Nothing is required",text:"For a while, you do nothing. The world does not collapse. The fire is warm and the rain keeps time.",options:[["Rest another moment","rest"],["Go back outside","square"]]},
-photo:{title:"The photograph",text:"Evelyn stands beside a girl in a yellow coat. Written on the back: ‘Ada deserves tomorrow, even if I cannot bear it.’",options:[["Return to the square","square"]]},
-clock:{title:"The stopped clock",text:"The clock is stuck on 11:47. A faded inscription reads: THE TOWN BORROWED ONE MINUTE. IT NEVER PAID IT BACK.",options:[["Return to the square","square"],["Try the key","library"]]},
-endingchoice:{title:"11:48",text:"You put the silver gear into the clock. Rowan and Mira stand quietly beside you. The bell is ready. For once, the next moment belongs to you.",options:[["Let the minute pass","free"],["Let the minute stay","stay"],["I need more time","square"]]},
-free:{title:"Ending · The First Tomorrow",text:"The bell rings. Rain changes direction. Rowan looks out at the dawn. ‘Terrifying,’ he says. ‘Coffee?’ The train arrives. For the first time, staying and leaving are both choices.",options:[["Begin again","train"],["Return to the sanctuary","house"]]},
-stay:{title:"Ending · The Kindness of Stillness",text:"The bell does not ring. The town remains safe inside its minute. No one gets hurt tomorrow. No one discovers tomorrow, either. The cottage waits with a warm fire and fourteen pillows.",options:[["Change your mind","endingchoice"],["Begin again","train"]]}
-};
-const key="elsewhere-episode1";let at=localStorage.getItem(key)||"train";
-function go(id){at=id;localStorage.setItem(key,id);render()}function render(){let s=chapters[at]||chapters.train;document.getElementById("game").replaceChildren();const m=document.getElementById("game");let t=document.createElement("small");t.textContent="✦ THE ELSEWHERE PROJECT · EPISODE 01";m.append(t);let h=document.createElement("h1");h.textContent=s.title;m.append(h);let p=document.createElement("p");p.textContent=s.text;m.append(p);for(const [label,next] of s.options){let b=document.createElement("button");b.textContent=label;b.onclick=()=>go(next);m.append(b)}let foot=document.createElement("small");foot.textContent="Progress saves automatically on this device · No timers, no scores";m.append(foot)}render();
-</script></html>
+(()=>{
+"use strict";
+const KEY="elsewhere-sandbox-v2";
+const LOC={train:"Night Train",station:"Station",square:"Greyhaven Square",bar:"Lantern Bar",library:"Municipal Library",cottage:"Cliff Cottage",clock:"Clock Tower"};
+const links={train:["station"],station:["square","train","clock"],square:["station","bar","library","cottage","clock"],bar:["square"],library:["square"],cottage:["square"],clock:["square","station"]};
+const synonyms={train:["train","carriage","conductor"],station:["station","platform"],square:["square","street","town","outside"],bar:["bar","pub","lantern","piano","tavern"],library:["library","books","librarian"],cottage:["cottage","house","home","cliff","sanctuary","pillows"],clock:["clock tower","tower","clock"]};
+const initial=()=>({version:2,loc:"train",turn:0,minute:47,flags:{metRowan:false,metMira:false,readJournal:false,gear:false,clockSeen:false,photo:false,heardWhisper:false,finale:null},inventory:["brass key"],relationship:{rowan:0,mira:0},eventIndex:0,lastEvent:-5,log:[],history:[],ended:false});
+let s;try{s=JSON.parse(localStorage.getItem(KEY));if(!s||s.version!==2||!Array.isArray(s.log))s=initial()}catch{s=initial()}
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s))}catch{}}
+function emit(text,kind="world",who){s.log.push({text,kind,who:who||({world:"Greyhaven",player:"You",event:"Somewhere else"}[kind]||"Greyhaven")});if(s.log.length>130)s.log=s.log.slice(-130)}
+function render(){ $("place").innerHTML="◈ <b>"+LOC[s.loc]+"</b>";$("clock").innerHTML="◷ <b>11:"+String(s.minute).padStart(2,"0")+" PM</b>";$("items").textContent="◇ "+(s.inventory.length?s.inventory.join(", "):"empty pockets");
+const f=$("feed");f.replaceChildren();for(const e of s.log){const d=document.createElement("article");d.className="entry "+e.kind;const n=document.createElement("div");n.className="who";n.textContent=e.who;const p=document.createElement("p");p.textContent=e.text;d.append(n,p);f.append(d)}save();scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
+function visible(){return {train:"Rain races down the carriage window. The conductor watches you over a silver ticket punch.",station:"The platform is empty except for a station clock that refuses to leave 11:47.",square:"Rain glazes Greyhaven's cobbles. The Lantern Bar is warm and loud; the library glows faintly; a cliff path leads to a cottage.",bar:"A piano murmurs beneath low lamps. Rowan sits at the keys, pretending he isn't watching you.",library:"Mira is arranging books that seem to move when you look away. A locked desk stands behind her.",cottage:"A fire crackles. The sea is black beyond the window. Fourteen outrageously soft pillows fill the bed. A photograph rests on the mantel.",clock:"The clock's hands tremble around 11:47. An empty gear socket sits behind a loose brass panel."}[s.loc]}
+function move(dest){if(!links[s.loc].includes(dest)){emit("You consider going there, but it isn't a direct route from here. Find a way through the square.");return}if(dest==="train"&&s.loc==="station"){emit("The train doors are locked. The conductor watches from behind the glass. There is something unfinished here.");return} s.loc=dest;emit(visible());if(dest==="bar"&&!s.flags.metRowan){s.flags.metRowan=true;emit("‘You're late,’ the pianist says. ‘I had an excellent apology prepared.’ His smile is infuriatingly confident.","world","Rowan")}if(dest==="library"&&!s.flags.metMira){s.flags.metMira=true;emit("‘Don't touch the books that whisper,’ says Mira without looking up. ‘They're spectacularly bad at keeping secrets.’","world","Mira")}if(dest==="cottage"&&!s.flags.photo){emit("A note by the kettle reads: YOU CAN REST HERE WITHOUT EARNING IT.")}}
+function includes(t,words){return words.some(w=>t.includes(w))}
+function speak(t){let target=includes(t,["rowan","pianist","musician"])? "rowan":includes(t,["mira","librarian"])? "mira":includes(t,["conductor"])? "conductor":s.loc==="bar"?"rowan":s.loc==="library"?"mira":s.loc==="train"?"conductor":null;
+if(!target){emit("Your words vanish into the rain. No one close enough to hear replies.");return}
+if(target==="rowan"&&s.loc!=="bar"||target==="mira"&&s.loc!=="library"||target==="conductor"&&s.loc!=="train"){emit("They aren't here. You could go find them.");return}
+if(target==="rowan"){let line=includes(t,["clock","time","minute","stuck"])?"‘At 11:48, the bell should ring,’ Rowan says. ‘Instead the minute starts over. Some of us remember more than others.’":includes(t,["know me","recognize","remember","late"])?"‘Sometimes I remember meeting you,’ he says. ‘Sometimes I remember waiting. Neither memory agrees with the other.’":includes(t,["love","flirt","kiss","beautiful","handsome","asshole","apolog","sarcas","idiot"])?"He laughs, then leans on the piano. ‘You always come armed with interesting conversation, or am I just lucky?’":includes(t,["evelyn","ada","daughter","accident"])?"‘Evelyn stopped the town to save Ada,’ he says. ‘Ask Mira for the journal. And don't mistake staying still for keeping someone safe.’":"Rowan considers your words instead of rushing to answer. ‘You don't owe this town a particular version of yourself,’ he says. ‘But I won't pretend I understand all of it.’";s.relationship.rowan+=1;emit(line,"world","Rowan");return}
+if(target==="mira"){s.relationship.mira+=1;emit(includes(t,["evelyn","ada","daughter","accident","mystery","journal","drawer","key","clock","time"])?"‘Evelyn Vale thought she could keep her daughter safe by stealing a minute from tomorrow,’ Mira says. ‘Her journal is in the locked desk. That brass key of yours may be useful.’":"‘I have an opinion,’ Mira says dryly. ‘But unlike some people, I can keep it to myself until you ask.’","world","Mira");return}
+emit(includes(t,["key","town","minute","clock","why"])?"‘Nothing here is free of consequences,’ says the conductor. ‘But you are free to choose.’":"The conductor clips an invisible ticket. ‘The last train never waits for certainty.’","world","Conductor")}
+function inspect(t){if(includes(t,["photo","photograph","mantel","picture"])&&s.loc==="cottage"){s.flags.photo=true;emit("In the photograph, Evelyn stands beside a little girl in a yellow coat. The back reads: ‘Ada deserves tomorrow, even if I cannot bear it.’");return}
+if(includes(t,["drawer","desk","journal","lock"])&&s.loc==="library"){if(!s.flags.readJournal){emit("The desk's brass lock is shaped exactly like your key. You could unlock it.");return}emit("Evelyn's journal says: ‘Return the gear to the tower. Then speak the truth that I could not.’");return}
+if(includes(t,["clock","gear","panel","socket","hands"])&&(s.loc==="clock"||s.loc==="station")){s.flags.clockSeen=true;emit("The clock has an empty gear socket. Scratched into its brass face: THE TOWN BORROWED ONE MINUTE. IT NEVER PAID IT BACK.");return}
+if(includes(t,["book","shelf"])&&s.loc==="library"){emit("You pull out a book bearing your name. It describes a peaceful life you have never lived. On the final page: A POSSIBLE LIFE IS NOT A PROMISE.");return}
+emit(visible())}
+function openDrawer(){if(s.loc!=="library"){emit("There is no locked desk here.");return}if(!s.flags.readJournal){s.flags.readJournal=true;s.flags.gear=true;s.inventory.push("silver gear");emit("Your brass key turns. Inside the desk: a silver gear and Evelyn's journal. ‘I stopped the bell to save Ada. The next minute belongs to everyone, not to me. Restore the gear at the clock tower. Say: LET THE MINUTE PASS or LET THE MINUTE STAY.’ You take the gear.");return}emit("The desk is open. You have already taken the gear and read the journal.")}
+function climax(t){if(s.loc!=="clock"){emit("You need to be at the clock tower to change the minute.");return}if(!s.flags.gear){emit("The clock mechanism is missing a gear. You cannot command it to move by force of will.");return}if(!s.flags.readJournal){emit("You know the mechanism but not what the words mean.");return}
+if(includes(t,["pass","move on","tomorrow","forward","release","free","ring"])){s.flags.finale="pass";s.ended=true;s.minute=48;emit("You fit the silver gear into the mechanism and let the minute pass. The bell rings once. The town shudders. Somewhere a child laughs in a morning that had never been allowed to arrive.
+Rowan joins you on the steps. ‘Terrifying,’ he says softly. ‘Coffee?’
+ENDING: THE FIRST TOMORROW. You may keep exploring.");return}
+if(includes(t,["stay","remain","still","stop","freeze","hold"])){s.flags.finale="stay";s.ended=true;emit("The silver gear catches. You whisper for the minute to stay. The bell falls silent. The town is safe from tomorrow. It will never learn what tomorrow might have been.
+ENDING: THE KINDNESS OF STILLNESS. You may still wander.");return}
+emit("The clock waits. The words in the journal were LET THE MINUTE PASS or LET THE MINUTE STAY. The choice remains yours.")}
+function unexpected(){if(s.ended||s.turn-s.lastEvent<3||s.turn<3)return;
+const events=[
+()=>{if(s.loc==="square"||s.loc==="station"){emit("The station bell rings thirteen times. Nobody in the square reacts. A woman in a yellow coat turns a corner and disappears.","event");s.flags.heardWhisper=true;return true}return false},
+()=>{if(s.loc==="bar"){emit("A folded note slides across the piano without a hand touching it. Rowan goes very still. ‘I wrote that tomorrow,’ he says.","event");return true}return false},
+()=>{if(s.loc==="library"){emit("All the clocks in the library begin ticking backward. Mira calmly puts a paperweight over a book that tries to open itself.","event");return true}return false},
+()=>{if(s.loc==="cottage"){emit("A second cup of tea appears on the table, still steaming. You never heard the door open.","event");return true}return false},
+()=>{emit("A gust of wind carries the scent of wet stone and summer oranges. For one moment, the stars overhead arrange themselves into a railway map.","event");return true}
+];
+let idx=(s.eventIndex*3+s.turn)%events.length,ok=events[idx]();if(!ok)events[4]();s.eventIndex++;s.lastEvent=s.turn}
+function interpret(raw){let t=raw.toLowerCase().replace(/[’]/g,"'").trim();s.history.push(t);s.turn++;if(!s.ended)s.minute=47;emit(raw,"player","You");
+if(includes(t,["inventory","what do i have","my pockets","what am i carrying"])){emit("You carry: "+s.inventory.join(", ")+".");return}
+if(includes(t,["where am i","look around","survey","observe","what do i see","describe","look at the room"])){emit(visible());return}
+if(includes(t,["rest","sleep","nap","lie down","lay down","sit","do nothing","wait","breathe","relax","read quietly"])){emit(s.loc==="cottage"?"You settle into the pillows. The rain asks nothing of you. The sea keeps breathing beyond the glass.":"You find a place to be still. The world carries on without needing your permission.");return}
+if(includes(t,["hit","punch","attack","hurt","stab","kill","fight","force","break down"])){emit("You try to use force. The world doesn't conveniently rearrange itself: "+(s.loc==="library"?"Mira steps back, furious, and bars you from the desk for the moment.":"The noise draws wary eyes. Nobody seems impressed.")+" The moment becomes tenser, not easier.");return}
+if((includes(t,["let the minute","minute pass","minute stay","make time","ring the bell","restore the clock","repair the clock","fix the clock","fit the gear","use the gear"])||includes(t,["gear"])&&s.loc==="clock")&&s.loc==="clock"){climax(t);return}
+if(includes(t,["unlock","open the drawer","open the desk","use the key","turn the key","pick the lock"])&&s.loc==="library"){openDrawer();return}
+if(includes(t,["take the gear","grab the gear","steal the gear","pick up the gear"])&&s.loc==="library"){if(s.flags.readJournal)emit("The silver gear is already in your pocket.");else emit("The gear is inside the locked drawer. You could use the key.");return}
+if(includes(t,["look","inspect","examine","study","read","search","check","investigate"])){inspect(t);return}
+if(includes(t,["talk","ask","tell","say","speak","whisper","shout","flirt","joke","apolog","question","hello","hi ","hello ","who are you","why are","what is","what happened","do you","i love","i hate"])){speak(t);return}
+let dest=null;for(const d of ["clock","cottage","library","bar","station","square","train"]){if(synonyms[d].some(w=>t.includes(w))){dest=d;break}}
+if(dest&&includes(t,["go","walk","head","visit","enter","leave","step","run","wander","travel","climb","return","follow","move","toward","into","to the"])){move(dest);return}
+if(dest&&dest!==s.loc&&t.length<48){move(dest);return}
+if(includes(t,["door","locked","lock"])){emit("You test it. It doesn't yield just because you want it to. There may be a key, another route, or someone who knows more.");return}
+if(includes(t,["clock","time","minute"])){inspect(t);return}
+if(includes(t,["rowan","mira","conductor"])){speak(t);return}
+emit("You try. The town responds to the part it can understand, but the rest remains uncertain. "+(s.loc==="bar"?"Rowan raises an eyebrow, waiting to see what you'll do next.":s.loc==="library"?"Mira glances up from her books, quietly curious.":"The rain continues, indifferent but oddly welcoming.")+" You can describe a simpler action or ask someone directly.");}
+function act(text){interpret(text);unexpected();render()}
+if(!s.log.length){emit("You wake on a train with no memory of buying a ticket. Beyond the window, the tracks run over a sea of stars.
+
+A conductor places a brass key in your hand. ‘Greyhaven has borrowed a minute,’ he says. ‘It has forgotten how to give it back.’
+
+The train stops. Nothing makes you get off. What do you do?");}
+$("form").addEventListener("submit",e=>{e.preventDefault();let field=$("action"),t=field.value.trim();if(!t)return;field.value="";act(t)});
+$("action").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();$("form").requestSubmit()}});
+$("guide").onclick=()=>$("help").showModal();$("closeHelp").onclick=()=>$("help").close();
+$("reset").onclick=()=>{if(!confirm("Begin a new journey? This erases the saved story on this device."))return;s=initial();emit("You wake on the last train. The conductor gives you a brass key. Beyond the windows, stars move beneath the rails. What do you do?");render()};
+render();
+})();
+</script></body></html>
